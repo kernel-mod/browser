@@ -4,10 +4,14 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"build": "npx spack"
+		"build": "npx rollup -c rollup.config.js"
 	},
 	"dependencies": {
 		"@swc/cli": "^0.1.49",
 		"@swc/core": "^1.2.80"
+	},
+	"devDependencies": {
+		"rollup": "^2.56.3",
+		"vite": "^2.5.6"
 	}
 }

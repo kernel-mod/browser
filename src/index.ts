@@ -1,31 +1,29 @@
-// TODO: TYYYYYPPPPPPIIIINNNNNNGGGGGGSSSSSSSSS
-
-// @ts-ignore
-// const ogre = kernel.packages.getRendererPackages();
+/// <reference path="../../electron/src/preload/renderer/bridge/index.ts" />
 
 const packageInstances = {};
 
-// TODO: Load efficiently with Promise.all.
-// for (const layer of ogre) {
-// 	for (const [id, pack] of Object.entries(layer)) {
-// 		const packModule = await import("import://" + pack);
-// 		const packClass = packModule.default ? packModule.default : packModule;
-// 		const packInstance = new packClass();
-// 		packageInstances[id] = packInstance;
-// 		packInstance.start?.();
-// 	}
-// }
+kernel.packages.events.on("startPackage", (packageID) => {
+	packageInstances[packageID]?.start?.();
+});
+kernel.packages.events.on("stopPackage", (packageID) => {
+	packageInstances[packageID]?.stop?.();
+});
 
-// // @ts-ignore
-// kernel.packages.onPackageStart((data) => {
-// 	console.log(data);
-// });
-// // @ts-ignore
-// kernel.packages.onPackageStop((data) => {
-// 	console.log(data);
-// });
+const ogre = kernel.packages.getOgre();
 
-// @ts-ignore
+for (const layer of ogre) {
+	for (const [id, pack] of Object.entries(layer)) {
+		if (kernel.packages.hasRendererScript(id)) {
+			let script = await import(
+				`${kernel.importProtocol}://${pack.path}/renderer.js`
+			);
+			script = !!script.default ? script.default : script;
+			packageInstances[id] = script;
+			script.start?.();
+		}
+	}
+}
+
 kernel.sendFinished();
 
 export {};

@@ -1,5 +1,8 @@
 /// <reference path="../../electron/src/preload/renderer/bridge/index.ts" />
 
+// This will probably change when the core is moved to a separate repository.
+import Ogre from "../../electron/src/core/packageLoader/Ogre";
+
 const packageInstances = {};
 
 kernel.packages.events.on("startPackage", (packageID) => {
@@ -9,7 +12,7 @@ kernel.packages.events.on("stopPackage", (packageID) => {
 	packageInstances[packageID]?.stop?.();
 });
 
-const ogre = kernel.packages.getOgre();
+const ogre: Ogre = kernel.packages.getOgre();
 
 for (const layer of ogre) {
 	for (const [id, pack] of Object.entries(layer)) {
